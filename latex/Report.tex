@@ -1,0 +1,191 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} 
+\usepackage{float} 
+\usepackage{subfigure} 
+\title{Assignment 4: Intro to Artificial Intelligence(report)}
+\author{Yuting Chen Xudong Jiang }
+\date{August 13 2021}
+
+\begin{document}
+
+\maketitle
+
+\section{Data}
+\subsection{Pre-processing}
+First of all, the size of two data sets and each image is obtained, then, each file is transformed into a matrix with size of [i, j, k], where ‘i’ refers to the number of samples, ‘j’ to the row number and ‘k’ to the column number. With this data format, we can easily extract the feature map using the sum pooling method of each image. Last, “\#” and “+” in images (Fig. 1) are replaced by “1”, empty values are replaced by “0”.
+ \begin{figure}[h]
+  	\center
+  	\includegraphics*[scale=0.3]{fig1.jpg}
+	\caption{Fig. 1 One digit image sample}
+	\label{fig:example}
+  \end{figure}
+\subsection{Feature extraction}
+As one digit image have small image size, every pixel of one image is regarded as a feature. However, face image has relatively large size, which will reduce the training speed and model accuracy(especially in NaiveBayes), so, the sum pooling method is also used for face images in the implementation of three algorithms. Comparison between single pixel feature and sum pooling is made.
+
+\section{Methods}
+Face image detection corresponds to binary classification, and digit detection corresponds to multi-class classification.
+\subsection{Perceptron}
+The basic idea of perceptron is to find a hyper-plane(Eq. (1)), which will divide the input samples into two categories : positive (f \textgreater 0, \^{y}=1) and negative (f \textless 0, \^y= -1).
+\begin{equation}
+\label{eqn:somelabel}
+f = w *\varphi + b
+\end{equation}
+In the training process, w and b are firstly initialized with random values and 1 respectively. Then, if the output \^{y} differs from the true label y, w and b will be updated (Eq. (3) and (4)) by their differential (Eq. (5) and (6)) to the loss function (Eq.(2)):
+\begin{equation}
+\label{eqn:somelabel}
+loss = -\Sigma_i y_i(w\varphi_i +b)
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+w = w - \Delta w
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+b = b - \Delta b
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+\Delta w = -y_i\varphi_i
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+\Delta b = -y_i
+\end{equation}
+\\Updating will stop if every $y_i$ is the same $\hat{y_i}$.
+\\Thee final w and b will be used to predict test samples and calculate model accuracy.
+\\Perceptron’s linear hyper plane can only classify binary categories. In the implementation, perceptron method is redesigned by using max function, which introduces non-linearity, to determine the label, thus, digit multi-class classification problem is successfully resolved.
+Besides, we use pixel values (feature) as $\varphi$.
+\subsection{Naive Bayes}
+Naive Bayes model is based on Bayes formula.
+\begin{equation}
+\label{eqn:somelabel}
+P(label = i \mid feature = j) = \frac{P(feature = j \mid label =i)*P(label=i)}{P(feature =j)}
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+P(label =i) = \frac{number of label = i Samples}{number Of All Samples}
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+P=(feature =j \mid label =i) = \frac{number Of Feature = j In Label = i Samples}{number Of Label = i Samples}
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+P(feature) = constant
+\end{equation}
+\\In the training process Eq.(7) is calculated by Eq.(8) and (9). Test data’s label probability is predicted by calculate $P(label =i\mid test Data Feature)$ (Eq.(7)), and the final label is determined by the max label probability.
+\\It must be stated that when feature(j) and certain label(i) do not appear at the same time in the training data, $P(feature=j \mid label=i) = 0$, in order to avoid such situation, Laplace correction must be applied. In the code, $P(feature=j\mid label=i)$ is set to 0.001 when it’s value smaller than 0.001.
+\subsection{Neural Network}
+\\The designed neural network contains one input layer, one hidden layer and one output layer. 
+\\From input layer to hidden layer:
+\begin{equation}
+\label{eqn:somelabel}
+f = w* x + b
+\end{equation}
+at hidden layer:
+\begin{equation}
+\label{eqn:somelabel}
+activation = sigmoid(f)
+\end{equation}
+from hidden layer to output:
+\begin{equation}
+\label{eqn:somelabel}
+\hat{y} = argmax(activation)
+\end{equation}
+w and b is optimized by their differential to loss function (back propagation), loss function is defined by cross-entropy.
+\begin{equation}
+\label{eqn:somelabel}
+loss = -\frac{1}{m}\Sigma_i y_i \log{\hat{y_i}} +(1-y_i)\log{(1-\hat{y_i})}
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+w = w - \Delta w
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+b = b - \Delta b
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+\Delta = \frac{1}{m}\Sigma_i(\hat{y_i}-y_i)x_i
+\end{equation}
+\begin{equation}
+\label{eqn:somelabel}
+\Delta b = \frac{1}{m}\Sigma_i( \hat{y_i}-y_i)
+\end{equation}
+The optimization function will be processed for N iterations before final w and b come out.
+\\Test data label is predicted by Eq.(13). For digit multi-class classification, in order to adapt to loss function(14), labels are transformed to one-hot format.
+\\When compared perceptron with neural network, perceptron performs like a simple one-layer network, but it can only work with binary classification.
+
+\clearpage
+\section{Result}
+After times of implementations, it is found that the best sum pooling size is 3*3 for face image.
+
+\subsection{Preceptron}
+\begin{figure}[h]
+  	\center
+  	\includegraphics*[scale=0.27]{fig2.jpg}
+	\caption{Fig. 2 the changing trend of time cost and accuracy with percentage of face image training data using perceptron method.}
+	\includegraphics*[scale=0.27]{fig3.jpg}
+	\caption{Fig. 3 same as Fig. 2, but with pooling size of 3*3.}
+	\includegraphics*[scale=0.27]{fig4.jpg}
+	\caption{Fig. 4 same as Fig.2, but of digit training data.}
+	\label{fig:example}
+  \end{figure}
+  
+
+\clearpage
+\subsection{NaiveBayes}
+\begin{figure}[h]
+  	\center
+  	\includegraphics*[scale=0.27]{fig5.jpg}
+	\caption{Fig. 5 the changing trend of time cost and accuracy with percentage of face image training data using naiveBayes method.}
+	\includegraphics*[scale=0.27]{fig6.jpg}
+	\caption{Fig. 6 same as Fig. 5, but with pooling size of 3*3}
+	\includegraphics*[scale=0.27]{fig7.jpg}
+	\caption{Fig. 4 same as fig. 5, but of digit image training data}
+	\label{fig:example}
+  \end{figure}
+
+\clearpage 
+\subsection{Neural Network}
+\begin{figure}[h]
+  	\center
+  	\includegraphics*[scale=0.27]{fig8.jpg}
+	\caption{Fig. 8 the changing trend of time cost and accuracy with percentage of face image training data using neuralNetwork method.}
+	\includegraphics*[scale=0.27]{fig9.jpg}
+	\caption{Fig. 9 same as fig. 8, but with pooling size of 3*3.}
+	\includegraphics*[scale=0.27]{fig10.jpg}
+	\caption{Fig. 10 same as fig.8, but of digit image training data.}
+	\label{fig:example}
+  \end{figure}
+
+\clearpage
+\section{Accuracy}
+\begin{center}
+    \begin{tabular}{| p{4cm} | p{3cm} | p{3cm} |  }
+    \hline
+    
+    & Face Image & Digit Image\\ \hline
+    Perceptron& 0.87& 0.925\\ \hline
+    Perceptron pool& 0.913& \\ \hline
+    NaiveBayes & 0.503& 0.864 \\ \hline
+    NaiveBayed pool & 0.931 &  \\ \hline
+    NeuralNetwork & 0.922& 0.847\\ \hline
+    NeuralNetwork pool & 0.935& \\ \hline
+    \end{tabular}
+\end{center}
+
+\section{Conclusion}
+\subsection{Model performance on face image}
+\\(1)It is clear that the training time of models are significantly reduced when using sum pooling method, meanwhile, higher classification accuracies appear.
+\\(2)Pooling is not used in Fig. 5, and the performance of naiveBayes appears abnormal. The reason is that there are too many features of one image, and every feature’s label probability is small, which results in lots of near-zero value when calculate Eq.(7).
+\subsection{Model performance on digit images}
+\\(1)Without using pooling method, the training time of models are clearly high.
+\\(2)Perceptron method performs best of three models.
+
+
+
+
+\end{document}
