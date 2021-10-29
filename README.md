@@ -1,4 +1,4 @@
-# Intro-to-AI
+# Face Detection and Digit Classification
 Acknowledgement: This project is based on the one created by Dan Klein and John DeNero that was given as part of the programming assignments of Berkeley’s CS188 course. 
 In this project, you will design three classifiers: a naive Bayes classifier, a perceptron classifier and a classifier of your choice. You will test your classifiers on two image 
 data sets: a set of scanned handwritten digit images and a set of face images in which edges have already been detected. Even with simple features, your classifiers will be able 
